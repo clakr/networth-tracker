@@ -7,10 +7,23 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "clean": "rm -rf .nuxt .output node_modules bun.lockb",
+    "lint:eslint": "eslint .",
+    "lint:prettier": "prettier . --check",
+    "lint": "eslint . && prettier . --check",
+    "lint:fix": "eslint . --fix && prettier . --write  --list-different"
   },
   "dependencies": {
     "nuxt": "^3.12.4",
     "vue": "latest"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^0.5.0",
+    "@nuxtjs/tailwindcss": "^6.12.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.6"
   }
 }
