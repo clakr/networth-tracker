@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { loginRedirects, navigateTo, reactive, useSanctumAuth } from "#imports";
+import { navigateTo, reactive, ref, useSanctumAuth } from "#imports";
 import type { User } from "~/utils/types/User";
 import Field from "~/components/Form/Field.vue";
 import Input from "~/components/Form/Input.vue";
 import Label from "~/components/Form/Label.vue";
 import Button from "~/components/Button.vue";
+import { authRedirects } from "~/utils/constants";
 
+// LOGIN USER
 const form = reactive({
   email: "",
   password: "",
 });
 
-const { login, user } = useSanctumAuth<User>();
+const isPending = ref(false);
 
-async function handleLogin(event: Event) {
+async function handleLoginUser(event: Event) {
   try {
+    isPending.value = true;
+    const { login, user } = useSanctumAuth<User>();
+
     const formData = new FormData(event.target as HTMLFormElement);
     const credentials = Object.fromEntries(formData);
 
@@ -22,9 +27,11 @@ async function handleLogin(event: Event) {
 
     if (!user.value) throw new Error("User not found");
 
-    await navigateTo(loginRedirects[user.value.role]);
+    await navigateTo(authRedirects[user.value.role]);
   } catch (error) {
     console.error(error);
+  } finally {
+    isPending.value = false;
   }
 }
 </script>
@@ -33,7 +40,7 @@ async function handleLogin(event: Event) {
   <main class="grid min-h-screen place-content-center text-neutral-950">
     <form
       class="flex w-[500px] flex-col gap-y-8 rounded-lg border p-6"
-      @submit.prevent="handleLogin"
+      @submit.prevent="handleLoginUser"
     >
       <section>
         <h1 class="text-2xl font-bold">Login</h1>
@@ -65,7 +72,7 @@ async function handleLogin(event: Event) {
           />
         </Field>
       </section>
-      <Button>Login</Button>
+      <Button :disabled="isPending">Login</Button>
     </form>
   </main>
 </template>
