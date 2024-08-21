@@ -1,11 +1,21 @@
 <script setup lang="ts">
-import { navigateTo, reactive, ref, useSanctumAuth } from "#imports";
+import {
+  definePageMeta,
+  navigateTo,
+  reactive,
+  ref,
+  useSanctumAuth,
+} from "#imports";
 import type { User } from "~/utils/types/User";
 import Field from "~/components/Form/Field.vue";
 import Input from "~/components/Form/Input.vue";
 import Label from "~/components/Form/Label.vue";
 import Button from "~/components/Button.vue";
 import { authRedirects } from "~/utils/constants";
+
+definePageMeta({
+  layout: "guest",
+});
 
 // LOGIN USER
 const form = reactive({
@@ -37,7 +47,7 @@ async function handleLoginUser(event: Event) {
 </script>
 
 <template>
-  <main class="grid min-h-screen place-content-center text-neutral-950">
+  <main class="grid place-content-center">
     <form
       class="flex w-[500px] flex-col gap-y-8 rounded-lg border p-6"
       @submit.prevent="handleLoginUser"

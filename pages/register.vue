@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { navigateTo, useSanctumClient, useSanctumUser } from "#imports";
+import {
+  definePageMeta,
+  navigateTo,
+  useSanctumClient,
+  useSanctumUser,
+} from "#imports";
 import { reactive, ref } from "vue";
 import Button from "~/components/Button.vue";
 import Field from "~/components/Form/Field.vue";
@@ -7,6 +12,10 @@ import Input from "~/components/Form/Input.vue";
 import Label from "~/components/Form/Label.vue";
 import { authRedirects } from "~/utils/constants";
 import type { User } from "~/utils/types/User";
+
+definePageMeta({
+  layout: "guest",
+});
 
 // REGISTER USER
 const form = reactive({
@@ -56,7 +65,7 @@ async function handleRegisterUser(event: Event) {
 </script>
 
 <template>
-  <main class="grid min-h-screen place-content-center text-neutral-950">
+  <main class="grid place-content-center">
     <form
       class="flex w-[500px] flex-col gap-y-8 rounded-lg border p-6"
       @submit.prevent="handleRegisterUser"
@@ -109,7 +118,7 @@ async function handleRegisterUser(event: Event) {
               v-model="form.password"
               type="password"
               name="password"
-              autocomplete="password"
+              autocomplete="current-password"
               placeholder="********"
             />
           </Field>
@@ -120,7 +129,7 @@ async function handleRegisterUser(event: Event) {
               v-model="form.passwordConfirmation"
               type="password"
               name="passwordConfirmation"
-              autocomplete="password-confirmation"
+              autocomplete="current-password"
               placeholder="********"
             />
           </Field>
