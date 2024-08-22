@@ -15,6 +15,7 @@ import { authRedirects } from "~/utils/constants";
 
 definePageMeta({
   layout: "guest",
+  middleware: "guest",
 });
 
 // LOGIN USER
@@ -37,7 +38,7 @@ async function handleLoginUser(event: Event) {
 
     if (!user.value) throw new Error("User not found");
 
-    await navigateTo(authRedirects[user.value.role]);
+    await navigateTo(authRedirects[user.value.role], { replace: true });
   } catch (error) {
     console.error(error);
   } finally {

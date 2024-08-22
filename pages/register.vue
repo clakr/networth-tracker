@@ -15,6 +15,7 @@ import type { User } from "~/utils/types/User";
 
 definePageMeta({
   layout: "guest",
+  middleware: "guest",
 });
 
 // REGISTER USER
@@ -51,9 +52,9 @@ async function handleRegisterUser(event: Event) {
         if (!response.ok) throw new Error("Error: Register User");
 
         user.value = await client("/api/user");
-        if (!user.value) throw new Error("User not found");
+        if (!user.value) throw new Error("Error: User not found");
 
-        await navigateTo(authRedirects[user.value.role]);
+        await navigateTo(authRedirects[user.value.role], { replace: true });
       },
     });
   } catch (error) {
