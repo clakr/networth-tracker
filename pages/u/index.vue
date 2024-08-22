@@ -2,7 +2,7 @@
 import { definePageMeta } from "#imports";
 
 definePageMeta({
-  layout: "auth",
+  layout: "user",
 });
 </script>
 
