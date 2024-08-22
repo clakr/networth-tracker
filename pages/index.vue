@@ -30,7 +30,7 @@ const isPending = ref(false);
 const formErrors = ref<Record<string, string[]> | null>(null);
 const httpError = ref<Error | null>(null);
 
-async function handleLoginUser(event: Event) {
+async function handleLoginUser() {
   try {
     isPending.value = true;
     formErrors.value = null;
@@ -39,15 +39,9 @@ async function handleLoginUser(event: Event) {
     const client = useSanctumClient();
     const user = useSanctumUser<User>();
 
-    const formData = new FormData(event.target as HTMLFormElement);
-    const { email, password } = Object.fromEntries(formData);
-
     await client("/login", {
       method: "POST",
-      body: {
-        email,
-        password,
-      },
+      body: form,
       onResponseError({ response }) {
         formErrors.value = response._data.errors;
       },

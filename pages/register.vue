@@ -32,7 +32,7 @@ const isPending = ref(false);
 const formErrors = ref<Record<string, string[]> | null>(null);
 const httpError = ref<Error | null>(null);
 
-async function handleRegisterUser(event: Event) {
+async function handleRegisterUser() {
   try {
     isPending.value = true;
     formErrors.value = null;
@@ -41,9 +41,7 @@ async function handleRegisterUser(event: Event) {
     const client = useSanctumClient();
     const user = useSanctumUser<User>();
 
-    const formData = new FormData(event.target as HTMLFormElement);
-    const { firstName, lastName, email, password, passwordConfirmation } =
-      Object.fromEntries(formData);
+    const { firstName, lastName, email, password, passwordConfirmation } = form;
 
     await client("/register", {
       method: "POST",
