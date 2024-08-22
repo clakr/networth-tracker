@@ -1,12 +1,23 @@
 <script setup lang="ts">
-import { navigateTo, useSanctumClient, useSanctumUser } from "#imports";
-import { reactive } from "vue";
+import {
+  definePageMeta,
+  navigateTo,
+  useSanctumClient,
+  useSanctumUser,
+} from "#imports";
+import { reactive, ref } from "vue";
 import Button from "~/components/Button.vue";
+import Errors from "~/components/Form/Errors.vue";
 import Field from "~/components/Form/Field.vue";
 import Input from "~/components/Form/Input.vue";
 import Label from "~/components/Form/Label.vue";
 import { authRedirects } from "~/utils/constants";
 import type { User } from "~/utils/types/User";
+
+definePageMeta({
+  layout: "guest",
+  middleware: "guest",
+});
 
 // REGISTER USER
 const form = reactive({
@@ -17,14 +28,20 @@ const form = reactive({
   passwordConfirmation: "",
 });
 
-const client = useSanctumClient();
-const user = useSanctumUser<User>();
+const isPending = ref(false);
+const formErrors = ref<Record<string, string[]> | null>(null);
+const httpError = ref<Error | null>(null);
 
-async function handleRegisterUser(event: Event) {
+async function handleRegisterUser() {
   try {
-    const formData = new FormData(event.target as HTMLFormElement);
-    const { firstName, lastName, email, password, passwordConfirmation } =
-      Object.fromEntries(formData);
+    isPending.value = true;
+    formErrors.value = null;
+    httpError.value = null;
+
+    const client = useSanctumClient();
+    const user = useSanctumUser<User>();
+
+    const { firstName, lastName, email, password, passwordConfirmation } = form;
 
     await client("/register", {
       method: "POST",
@@ -34,23 +51,25 @@ async function handleRegisterUser(event: Event) {
         password,
         password_confirmation: passwordConfirmation,
       },
-      async onResponse({ response }) {
-        if (!response.ok) throw new Error("Error: Register User");
-
-        user.value = await client("/api/user");
-        if (!user.value) throw new Error("User not found");
-
-        await navigateTo(authRedirects[user.value.role]);
+      onResponseError({ response }) {
+        formErrors.value = response._data.errors;
       },
     });
+
+    user.value = await client("/api/user");
+    if (!user.value) throw new Error("User not found");
+
+    await navigateTo(authRedirects[user.value.role], { replace: true });
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error) httpError.value = error;
+  } finally {
+    isPending.value = false;
   }
 }
 </script>
 
 <template>
-  <main class="grid min-h-screen place-content-center text-neutral-950">
+  <main class="grid place-content-center">
     <form
       class="flex w-[500px] flex-col gap-y-8 rounded-lg border p-6"
       @submit.prevent="handleRegisterUser"
@@ -60,8 +79,8 @@ async function handleRegisterUser(event: Event) {
         <p class="text-neutral-950/75">Create a new account to get started.</p>
       </section>
       <section class="flex flex-col gap-y-4">
-        <div class="flex gap-x-4">
-          <Field class-name="grow">
+        <div class="grid grid-cols-2 gap-2">
+          <Field>
             <Label for="firstName">First Name</Label>
             <Input
               id="firstName"
@@ -70,9 +89,10 @@ async function handleRegisterUser(event: Event) {
               name="firstName"
               autocomplete="given-name"
               placeholder="John"
+              required
             />
           </Field>
-          <Field class-name="grow">
+          <Field>
             <Label for="lastName">Last Name</Label>
             <Input
               id="lastName"
@@ -81,8 +101,10 @@ async function handleRegisterUser(event: Event) {
               name="lastName"
               autocomplete="family-name"
               placeholder="Doe"
+              required
             />
           </Field>
+          <Errors :error="formErrors?.name" class-name="col-span-2" />
         </div>
         <Field>
           <Label for="email">Email</Label>
@@ -93,34 +115,42 @@ async function handleRegisterUser(event: Event) {
             name="email"
             autocomplete="email"
             placeholder="johndoe@example.com"
+            required
           />
+          <Errors :error="formErrors?.email" class-name="mt-1" />
         </Field>
-        <div class="flex gap-x-4">
-          <Field class-name="grow">
+        <div class="grid grid-cols-2 gap-2">
+          <Field>
             <Label for="password">Password</Label>
             <Input
               id="password"
               v-model="form.password"
               type="password"
               name="password"
-              autocomplete="password"
+              autocomplete="current-password"
               placeholder="********"
+              required
             />
           </Field>
-          <Field class-name="grow">
+          <Field>
             <Label for="passwordConfirmation">Confirm Password</Label>
             <Input
               id="passwordConfirmation"
               v-model="form.passwordConfirmation"
               type="password"
               name="passwordConfirmation"
-              autocomplete="password-confirmation"
+              autocomplete="current-password"
               placeholder="********"
+              required
             />
           </Field>
+          <Errors :error="formErrors?.password" class-name="col-span-2" />
         </div>
       </section>
-      <Button>Register</Button>
+      <span v-if="!formErrors && httpError">
+        {{ httpError }}
+      </span>
+      <Button :disabled="isPending">Register</Button>
     </form>
   </main>
 </template>

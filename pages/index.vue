@@ -1,37 +1,66 @@
 <script setup lang="ts">
-import { navigateTo, reactive, useSanctumAuth } from "#imports";
-import type { User } from "~/utils/types/User";
+import {
+  definePageMeta,
+  navigateTo,
+  reactive,
+  ref,
+  useSanctumClient,
+  useSanctumUser,
+} from "#imports";
+import Button from "~/components/Button.vue";
+import Errors from "~/components/Form/Errors.vue";
 import Field from "~/components/Form/Field.vue";
 import Input from "~/components/Form/Input.vue";
 import Label from "~/components/Form/Label.vue";
-import Button from "~/components/Button.vue";
 import { authRedirects } from "~/utils/constants";
+import type { User } from "~/utils/types/User";
 
+definePageMeta({
+  layout: "guest",
+  middleware: "guest",
+});
+
+// LOGIN USER
 const form = reactive({
   email: "",
   password: "",
 });
 
-const { login, user } = useSanctumAuth<User>();
+const isPending = ref(false);
+const formErrors = ref<Record<string, string[]> | null>(null);
+const httpError = ref<Error | null>(null);
 
-async function handleLoginUser(event: Event) {
+async function handleLoginUser() {
   try {
-    const formData = new FormData(event.target as HTMLFormElement);
-    const credentials = Object.fromEntries(formData);
+    isPending.value = true;
+    formErrors.value = null;
+    httpError.value = null;
 
-    await login(credentials);
+    const client = useSanctumClient();
+    const user = useSanctumUser<User>();
 
+    await client("/login", {
+      method: "POST",
+      body: form,
+      onResponseError({ response }) {
+        formErrors.value = response._data.errors;
+      },
+    });
+
+    user.value = await client("/api/user");
     if (!user.value) throw new Error("User not found");
 
-    await navigateTo(authRedirects[user.value.role]);
+    await navigateTo(authRedirects[user.value.role], { replace: true });
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error) httpError.value = error;
+  } finally {
+    isPending.value = false;
   }
 }
 </script>
 
 <template>
-  <main class="grid min-h-screen place-content-center text-neutral-950">
+  <main class="grid place-content-center">
     <form
       class="flex w-[500px] flex-col gap-y-8 rounded-lg border p-6"
       @submit.prevent="handleLoginUser"
@@ -53,6 +82,7 @@ async function handleLoginUser(event: Event) {
             autocomplete="email"
             placeholder="johndoe@example.com"
           />
+          <Errors :error="formErrors?.email" class-name="mt-1" />
         </Field>
         <Field>
           <Label for="password">Password</Label>
@@ -64,9 +94,13 @@ async function handleLoginUser(event: Event) {
             autocomplete="current-password"
             placeholder="********"
           />
+          <Errors :error="formErrors?.password" class-name="mt-1" />
         </Field>
       </section>
-      <Button>Login</Button>
+      <span v-if="!formErrors && httpError">
+        {{ httpError }}
+      </span>
+      <Button :disabled="isPending">Login</Button>
     </form>
   </main>
 </template>
