@@ -2,11 +2,11 @@
 import { definePageMeta } from "#imports";
 
 definePageMeta({
-  middleware: "user",
-  layout: "user",
+  middleware: "admin",
+  layout: "admin",
 });
 </script>
 
 <template>
-  <h1>user</h1>
+  <h1>users!</h1>
 </template>

@@ -4,11 +4,11 @@ import { computed } from "vue";
 
 const props = defineProps<{ className?: string }>();
 
-const classes = computed(() => twMerge("border-b p-4", props.className));
+const classes = computed(() =>
+  twMerge("border-r p-4 bg-neutral-100", props.className),
+);
 </script>
 
 <template>
-  <nav :class="classes">
-    <slot />
-  </nav>
+  <aside :class="classes"><slot /></aside>
 </template>

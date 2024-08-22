@@ -16,8 +16,8 @@ import { authRedirects } from "~/utils/constants";
 import type { User } from "~/utils/types/User";
 
 definePageMeta({
-  layout: "guest",
   middleware: "guest",
+  layout: "guest",
 });
 
 // LOGIN USER
