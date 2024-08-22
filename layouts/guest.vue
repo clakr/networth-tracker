@@ -4,9 +4,9 @@ import Button from "~/components/Button.vue";
 
 <template>
   <div class="grid min-h-svh grid-rows-[auto_1fr] text-neutral-950">
-    <Navbar class-name="flex justify-end gap-x-2">
-      <Button to="/">Login</Button>
-      <Button to="/register">Register</Button>
+    <Navbar class-name="flex justify-end">
+      <Button variant="link" to="/">Login</Button>
+      <Button variant="link" to="/register">Register</Button>
     </Navbar>
     <slot />
   </div>

@@ -4,14 +4,16 @@ import {
   navigateTo,
   reactive,
   ref,
-  useSanctumAuth,
+  useSanctumClient,
+  useSanctumUser,
 } from "#imports";
-import type { User } from "~/utils/types/User";
+import Button from "~/components/Button.vue";
+import Errors from "~/components/Form/Errors.vue";
 import Field from "~/components/Form/Field.vue";
 import Input from "~/components/Form/Input.vue";
 import Label from "~/components/Form/Label.vue";
-import Button from "~/components/Button.vue";
 import { authRedirects } from "~/utils/constants";
+import type { User } from "~/utils/types/User";
 
 definePageMeta({
   layout: "guest",
@@ -25,22 +27,38 @@ const form = reactive({
 });
 
 const isPending = ref(false);
+const formErrors = ref<Record<string, string[]> | null>(null);
+const httpError = ref<Error | null>(null);
 
 async function handleLoginUser(event: Event) {
   try {
     isPending.value = true;
-    const { login, user } = useSanctumAuth<User>();
+    formErrors.value = null;
+    httpError.value = null;
+
+    const client = useSanctumClient();
+    const user = useSanctumUser<User>();
 
     const formData = new FormData(event.target as HTMLFormElement);
-    const credentials = Object.fromEntries(formData);
+    const { email, password } = Object.fromEntries(formData);
 
-    await login(credentials);
+    await client("/login", {
+      method: "POST",
+      body: {
+        email,
+        password,
+      },
+      onResponseError({ response }) {
+        formErrors.value = response._data.errors;
+      },
+    });
 
+    user.value = await client("/api/user");
     if (!user.value) throw new Error("User not found");
 
     await navigateTo(authRedirects[user.value.role], { replace: true });
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error) httpError.value = error;
   } finally {
     isPending.value = false;
   }
@@ -70,6 +88,7 @@ async function handleLoginUser(event: Event) {
             autocomplete="email"
             placeholder="johndoe@example.com"
           />
+          <Errors :error="formErrors?.email" class-name="mt-1" />
         </Field>
         <Field>
           <Label for="password">Password</Label>
@@ -81,8 +100,12 @@ async function handleLoginUser(event: Event) {
             autocomplete="current-password"
             placeholder="********"
           />
+          <Errors :error="formErrors?.password" class-name="mt-1" />
         </Field>
       </section>
+      <span v-if="!formErrors && httpError">
+        {{ httpError }}
+      </span>
       <Button :disabled="isPending">Login</Button>
     </form>
   </main>
