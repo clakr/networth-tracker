@@ -4,7 +4,9 @@ import { computed } from "vue";
 
 const props = defineProps<{ className?: string }>();
 
-const classes = computed(() => twMerge("border-b p-4", props.className));
+const classes = computed(() =>
+  twMerge("border-b p-4 border-neutral-200  bg-neutral-50", props.className),
+);
 </script>
 
 <template>

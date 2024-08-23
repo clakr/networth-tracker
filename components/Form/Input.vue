@@ -5,6 +5,6 @@ const model = defineModel<string>();
 <template>
   <input
     v-model="model"
-    class="rounded-md border px-3 py-1.5 outline-offset-4 outline-neutral-950"
+    class="rounded-md border border-neutral-200 px-3 py-1.5 outline-offset-4 outline-neutral-950"
   />
 </template>

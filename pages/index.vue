@@ -62,7 +62,7 @@ async function handleLoginUser() {
 <template>
   <main class="grid place-content-center">
     <form
-      class="flex w-[500px] flex-col gap-y-8 rounded-lg border p-6"
+      class="flex w-[500px] flex-col gap-y-8 rounded-lg border border-neutral-200 p-6"
       @submit.prevent="handleLoginUser"
     >
       <section>

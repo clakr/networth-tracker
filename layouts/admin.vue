@@ -25,7 +25,7 @@ async function handleLogoutUser() {
 
 <template>
   <div
-    class="grid min-h-svh grid-cols-[theme(spacing.64)_1fr] grid-rows-[auto_1fr] bg-neutral-50 text-neutral-950"
+    class="grid min-h-svh grid-cols-[theme(spacing.64)_calc(100vw-theme(spacing.64))] grid-rows-[auto_1fr] bg-neutral-50 text-neutral-950"
   >
     <Navbar class-name="flex justify-end col-span-2">
       <Button :disabled="isPending" @click="handleLogoutUser">Logout</Button>

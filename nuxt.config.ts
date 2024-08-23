@@ -9,4 +9,14 @@ export default defineNuxtConfig({
   imports: {
     autoImport: false,
   },
+  nitro: {
+    routeRules: {
+      "/backend/**": {
+        proxy: `${process.env.BACKEND_URL}/**`,
+      },
+    },
+  },
+  tailwindcss: {
+    configPath: "tailwind.config",
+  },
 });

@@ -8,7 +8,8 @@ type Variant =
   | "destructive"
   | "outline"
   | "ghost"
-  | "link";
+  | "link"
+  | "icon";
 
 const props = withDefaults(
   defineProps<{
@@ -24,12 +25,13 @@ const props = withDefaults(
 );
 
 const variantDefaultClasses: Record<Variant, string> = {
-  primary: "bg-neutral-950 text-neutral-50 hover:opacity-85 px-4 py-2",
+  primary: "bg-neutral-950 text-neutral-50 hover:opacity-85 px-3 py-2.5",
   secondary: "",
   destructive: "",
   outline: "",
   ghost: "",
   link: "hover:underline underline-offset-2 py-1 px-2",
+  icon: "border p-3 [&>svg]:size-4 border-neutral-200 hover:bg-neutral-200/50",
 };
 
 const classes = computed(() =>
