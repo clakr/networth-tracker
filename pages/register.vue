@@ -11,11 +11,11 @@ import Errors from "~/components/Form/Errors.vue";
 import Field from "~/components/Form/Field.vue";
 import Input from "~/components/Form/Input.vue";
 import Label from "~/components/Form/Label.vue";
-import { authRedirects } from "~/utils/constants";
-import type { Nullable } from "~/utils/types";
-import type { UserRegisterForm } from "~/utils/types/Auth";
-import type { LaravelFormErrors } from "~/utils/types/Error";
-import type { User } from "~/utils/types/User";
+import { authRedirects } from "~/lib/constants";
+import type { Nullable } from "~/lib/types";
+import type { UserRegisterForm } from "~/lib/types/Auth";
+import type { LaravelFormErrors } from "~/lib/types/Error";
+import type { User } from "~/lib/types/User";
 
 definePageMeta({
   middleware: "guest",

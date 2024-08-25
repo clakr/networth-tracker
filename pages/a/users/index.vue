@@ -10,8 +10,9 @@ import Button from "~/components/Button.vue";
 import Main from "~/components/Main.vue";
 import Pagination from "~/components/Pagination.vue";
 import Table from "~/components/Table.vue";
-import type { Paginate } from "~/utils/types";
-import type { User } from "~/utils/types/User";
+import type { Paginate } from "~/lib/types";
+import type { User } from "~/lib/types/User";
+import capitalizeFirstLetter from "~/lib/utils/capitalizeFirstLetter";
 
 definePageMeta({
   middleware: "admin",
@@ -81,7 +82,7 @@ async function handleDeleteUser(id: User["id"]) {
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
           <td>{{ user.emailVerifiedAt }}</td>
-          <td>{{ user.role }}</td>
+          <td>{{ capitalizeFirstLetter(user.role) }}</td>
           <td>{{ user.createdAt }}</td>
           <td>{{ user.updatedAt }}</td>
           <td>

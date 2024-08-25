@@ -1,6 +1,7 @@
 import { defineNuxtRouteMiddleware, navigateTo } from "#app";
-import { authRedirects, useSanctumAuth } from "#imports";
-import type { User } from "~/utils/types/User";
+import { useSanctumAuth } from "#imports";
+import { authRedirects } from "~/lib/constants";
+import type { User } from "~/lib/types/User";
 
 export default defineNuxtRouteMiddleware(() => {
   const { isAuthenticated, user } = useSanctumAuth<User>();

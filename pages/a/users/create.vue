@@ -13,9 +13,10 @@ import Input from "~/components/Form/Input.vue";
 import Label from "~/components/Form/Label.vue";
 import Select from "~/components/Form/Select.vue";
 import Main from "~/components/Main.vue";
-import type { Nullable } from "~/utils/types";
-import type { LaravelFormErrors } from "~/utils/types/Error";
-import { Role, type AdminCreateUserForm } from "~/utils/types/User";
+import type { Nullable } from "~/lib/types";
+import type { LaravelFormErrors } from "~/lib/types/Error";
+import { Role, type AdminCreateUserForm } from "~/lib/types/User";
+import capitalizeFirstLetter from "~/lib/utils/capitalizeFirstLetter";
 
 definePageMeta({
   middleware: "admin",
@@ -91,7 +92,7 @@ async function handleCreateUser() {
         <Label for="role">Role</Label>
         <Select id="role" v-model="form.role" name="role">
           <option v-for="role in Role" :key="role" :value="role">
-            {{ role }}
+            {{ capitalizeFirstLetter(role) }}
           </option>
         </Select>
         <Errors :error="formErrors?.role" class-name="mt-1" />
