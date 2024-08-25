@@ -13,6 +13,9 @@ import Field from "~/components/Form/Field.vue";
 import Input from "~/components/Form/Input.vue";
 import Label from "~/components/Form/Label.vue";
 import { authRedirects } from "~/utils/constants";
+import type { Nullable } from "~/utils/types";
+import type { UserLoginForm } from "~/utils/types/Auth";
+import type { LaravelFormErrors } from "~/utils/types/Error";
 import type { User } from "~/utils/types/User";
 
 definePageMeta({
@@ -21,14 +24,14 @@ definePageMeta({
 });
 
 // LOGIN USER
-const form = reactive({
+const form = reactive<UserLoginForm>({
   email: "",
   password: "",
 });
 
 const isPending = ref(false);
-const formErrors = ref<Record<string, string[]> | null>(null);
-const httpError = ref<Error | null>(null);
+const formErrors = ref<Nullable<LaravelFormErrors>>(null);
+const httpError = ref<Nullable<Error>>(null);
 
 async function handleLoginUser() {
   try {
@@ -81,6 +84,7 @@ async function handleLoginUser() {
             name="email"
             autocomplete="email"
             placeholder="johndoe@example.com"
+            required
           />
           <Errors :error="formErrors?.email" class-name="mt-1" />
         </Field>
@@ -93,6 +97,7 @@ async function handleLoginUser() {
             name="password"
             autocomplete="current-password"
             placeholder="********"
+            required
           />
           <Errors :error="formErrors?.password" class-name="mt-1" />
         </Field>

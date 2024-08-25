@@ -4,19 +4,21 @@ export type Resource<T> = {
 
 export type Paginate<T> = Resource<T> & {
   links: {
-    first: string | null;
-    last: string | null;
-    prev: string | null;
-    next: string | null;
+    first: Nullable<string>;
+    last: Nullable<string>;
+    prev: Nullable<string>;
+    next: Nullable<string>;
   };
   meta: {
     current_page: number;
     from: number;
     last_page: number;
-    links: Array<{ url: string | null; label: string; active: boolean }>;
+    links: Array<{ url: Nullable<string>; label: string; active: boolean }>;
     path: string;
     per_page: number;
     to: number;
     total: number;
   };
 };
+
+export type Nullable<T> = T | null;

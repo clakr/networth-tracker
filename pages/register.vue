@@ -12,6 +12,9 @@ import Field from "~/components/Form/Field.vue";
 import Input from "~/components/Form/Input.vue";
 import Label from "~/components/Form/Label.vue";
 import { authRedirects } from "~/utils/constants";
+import type { Nullable } from "~/utils/types";
+import type { UserRegisterForm } from "~/utils/types/Auth";
+import type { LaravelFormErrors } from "~/utils/types/Error";
 import type { User } from "~/utils/types/User";
 
 definePageMeta({
@@ -20,17 +23,16 @@ definePageMeta({
 });
 
 // REGISTER USER
-const form = reactive({
-  firstName: "",
-  lastName: "",
+const form = reactive<UserRegisterForm>({
+  name: "",
   email: "",
   password: "",
   passwordConfirmation: "",
 });
 
 const isPending = ref(false);
-const formErrors = ref<Record<string, string[]> | null>(null);
-const httpError = ref<Error | null>(null);
+const formErrors = ref<Nullable<LaravelFormErrors>>(null);
+const httpError = ref<Nullable<Error>>(null);
 
 async function handleRegisterUser() {
   try {
@@ -41,15 +43,13 @@ async function handleRegisterUser() {
     const client = useSanctumClient();
     const user = useSanctumUser<User>();
 
-    const { firstName, lastName, email, password, passwordConfirmation } = form;
-
     await client("/register", {
       method: "POST",
       body: {
-        name: `${firstName} ${lastName}`,
-        email,
-        password,
-        password_confirmation: passwordConfirmation,
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        password_confirmation: form.passwordConfirmation,
       },
       onResponseError({ response }) {
         formErrors.value = response._data.errors;
@@ -79,33 +79,19 @@ async function handleRegisterUser() {
         <p class="text-neutral-950/75">Create a new account to get started.</p>
       </section>
       <section class="flex flex-col gap-y-4">
-        <div class="grid grid-cols-2 gap-2">
-          <Field>
-            <Label for="firstName">First Name</Label>
-            <Input
-              id="firstName"
-              v-model="form.firstName"
-              type="text"
-              name="firstName"
-              autocomplete="given-name"
-              placeholder="John"
-              required
-            />
-          </Field>
-          <Field>
-            <Label for="lastName">Last Name</Label>
-            <Input
-              id="lastName"
-              v-model="form.lastName"
-              type="text"
-              name="lastName"
-              autocomplete="family-name"
-              placeholder="Doe"
-              required
-            />
-          </Field>
-          <Errors :error="formErrors?.name" class-name="col-span-2" />
-        </div>
+        <Field>
+          <Label for="name">Name</Label>
+          <Input
+            id="name"
+            v-model="form.name"
+            type="text"
+            name="name"
+            autocomplete="name"
+            placeholder="John Doe"
+            required
+          />
+          <Errors :error="formErrors?.name" class-name="mt-1" />
+        </Field>
         <Field>
           <Label for="email">Email</Label>
           <Input
