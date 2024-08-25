@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { definePageMeta, useFetch } from "#imports";
+import {
+  computed,
+  definePageMeta,
+  useLazyAsyncData,
+  useRoute,
+  useSanctumClient,
+} from "#imports";
 import Button from "~/components/Button.vue";
 import Main from "~/components/Main.vue";
+import Pagination from "~/components/Pagination.vue";
 import Table from "~/components/Table.vue";
-import type { Resource } from "~/utils/types";
+import type { Paginate } from "~/utils/types";
 import type { User } from "~/utils/types/User";
 
 definePageMeta({
@@ -11,17 +18,24 @@ definePageMeta({
   layout: "admin",
 });
 
+// GET PAGINATED USERS
+const route = useRoute();
+const page = computed(() => route.query.page ?? 1);
+
+const client = useSanctumClient();
+
 const {
   status,
   error,
   data: response,
-} = await useFetch<Resource<User[]>>("/backend/api/users", {
-  key: "users",
-});
+} = await useLazyAsyncData<Paginate<User[]>>(
+  async () => client("/api/users", { params: { page: page.value } }),
+  { watch: [page] },
+);
 </script>
 
 <template>
-  <Main class="flex flex-col gap-y-6">
+  <Main class="flex flex-col gap-y-4">
     <h1 class="text-3xl font-bold">Users</h1>
     <header class="flex justify-end">
       <Button class-name="flex gap-x-2 items-center">
@@ -89,5 +103,13 @@ const {
         </tr>
       </template>
     </Table>
+    <Pagination
+      v-if="response"
+      :from="response.meta.from"
+      :to="response.meta.to"
+      :total="response.meta.total"
+      :current-page="response.meta.current_page"
+      :last-page="response.meta.last_page"
+    />
   </Main>
 </template>
