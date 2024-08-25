@@ -18,7 +18,7 @@ definePageMeta({
   layout: "admin",
 });
 
-// GET PAGINATED USERS
+// GET USERS
 const route = useRoute();
 const page = computed(() => route.query.page ?? 1);
 
@@ -28,10 +28,17 @@ const {
   status,
   error,
   data: response,
+  refresh,
 } = await useLazyAsyncData<Paginate<User[]>>(
   async () => client("/api/users", { params: { page: page.value } }),
   { watch: [page] },
 );
+
+// DELETE USER
+async function handleDeleteUser(id: User["id"]) {
+  await client(`/api/users/${id}`, { method: "delete" });
+  await refresh();
+}
 </script>
 
 <template>
@@ -89,7 +96,7 @@ const {
                   />
                 </svg>
               </Button>
-              <Button variant="icon">
+              <Button variant="icon" @click="handleDeleteUser(user.id)">
                 <span class="sr-only">Delete User</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path
