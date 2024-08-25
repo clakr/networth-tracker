@@ -31,7 +31,7 @@ const form = reactive<UserRegisterForm>({
 });
 
 const isPending = ref(false);
-const formErrors = ref<Nullable<LaravelFormErrors>>(null);
+const formErrors = ref<Nullable<LaravelFormErrors<UserRegisterForm>>>(null);
 const httpError = ref<Nullable<Error>>(null);
 
 async function handleRegisterUser() {

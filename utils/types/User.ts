@@ -8,4 +8,9 @@ export type User = {
   updatedAt: Date;
 };
 
-export type Role = "user" | "admin";
+export enum Role {
+  USER = "user",
+  ADMIN = "admin",
+}
+
+export type AdminCreateUserForm = Pick<User, "name" | "email" | "role">;

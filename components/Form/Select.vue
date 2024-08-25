@@ -2,19 +2,22 @@
 import { twMerge } from "tailwind-merge";
 import { computed } from "vue";
 
+const model = defineModel<string>();
+
 const props = defineProps<{
   className?: string;
-  header: string;
 }>();
 
 const classes = computed(() =>
-  twMerge("p-4 flex flex-col gap-y-4", props.className),
+  twMerge(
+    "border border-neutral-200 outline-neutral-950 outline-offset-4 outline-2 px-3 py-1.5 rounded-md",
+    props.className,
+  ),
 );
 </script>
 
 <template>
-  <main :class="classes">
-    <h1 class="text-3xl font-bold">{{ props.header }}</h1>
+  <select v-model="model" :class="classes">
     <slot />
-  </main>
+  </select>
 </template>

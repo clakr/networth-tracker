@@ -42,10 +42,9 @@ async function handleDeleteUser(id: User["id"]) {
 </script>
 
 <template>
-  <Main class="flex flex-col gap-y-4">
-    <h1 class="text-3xl font-bold">Users</h1>
+  <Main header="Users">
     <header class="flex justify-end">
-      <Button class-name="flex gap-x-2 items-center">
+      <Button class-name="flex gap-x-2 items-center" to="/a/users/create">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

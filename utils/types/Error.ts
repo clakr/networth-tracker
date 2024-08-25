@@ -1,1 +1,1 @@
-export type LaravelFormErrors = Record<string, string[]>;
+export type LaravelFormErrors<T> = Record<keyof T, string[]>;

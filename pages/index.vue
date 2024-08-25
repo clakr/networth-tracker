@@ -30,7 +30,7 @@ const form = reactive<UserLoginForm>({
 });
 
 const isPending = ref(false);
-const formErrors = ref<Nullable<LaravelFormErrors>>(null);
+const formErrors = ref<Nullable<LaravelFormErrors<UserLoginForm>>>(null);
 const httpError = ref<Nullable<Error>>(null);
 
 async function handleLoginUser() {
