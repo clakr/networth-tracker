@@ -8,7 +8,5 @@ definePageMeta({
 </script>
 
 <template>
-  <Main>
-    <h1>admin</h1>
-  </Main>
+  <Main header="Admin"> </Main>
 </template>

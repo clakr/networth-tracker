@@ -14,3 +14,4 @@ export enum Role {
 }
 
 export type AdminCreateUserForm = Pick<User, "name" | "email" | "role">;
+export type AdminUpdateUserForm = AdminCreateUserForm;

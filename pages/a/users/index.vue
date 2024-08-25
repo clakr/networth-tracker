@@ -87,7 +87,7 @@ async function handleDeleteUser(id: User["id"]) {
           <td>{{ user.updatedAt }}</td>
           <td>
             <div class="flex gap-x-2">
-              <Button variant="icon">
+              <Button variant="icon" :to="`/a/users/${user.id}/edit`">
                 <span class="sr-only">Edit User</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path
