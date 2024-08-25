@@ -5,6 +5,7 @@ import {
   useLazyAsyncData,
   useRoute,
   useSanctumClient,
+  useSanctumUser,
 } from "#imports";
 import Button from "~/components/Button.vue";
 import Main from "~/components/Main.vue";
@@ -36,7 +37,13 @@ const {
 );
 
 // DELETE USER
+const user = useSanctumUser<User>();
+function isAuthedUser(id: User["id"]) {
+  return user.value?.id === id;
+}
+
 async function handleDeleteUser(id: User["id"]) {
+  if (isAuthedUser(id)) return;
   await client(`/api/users/${id}`, { method: "delete" });
   await refresh();
 }
@@ -96,7 +103,11 @@ async function handleDeleteUser(id: User["id"]) {
                   />
                 </svg>
               </Button>
-              <Button variant="icon" @click="handleDeleteUser(user.id)">
+              <Button
+                variant="icon"
+                :disabled="isAuthedUser(user.id)"
+                @click="handleDeleteUser(user.id)"
+              >
                 <span class="sr-only">Delete User</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path
