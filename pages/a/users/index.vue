@@ -123,6 +123,7 @@ async function handleDeleteUser(id: User["id"]) {
     </Table>
     <Pagination
       v-if="response"
+      for="user"
       :from="response.meta.from"
       :to="response.meta.to"
       :total="response.meta.total"

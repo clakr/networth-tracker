@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { navigateTo } from "#app";
 import { computed } from "vue";
+import type { Models } from "~/lib/types";
 
 const props = defineProps<{
+  for: Models;
   from: number;
   to: number;
   total: number;
@@ -12,6 +14,11 @@ const props = defineProps<{
 
 const isFirstPage = computed(() => props.currentPage === 1);
 const isLastPage = computed(() => props.currentPage === props.lastPage);
+
+const model: Record<Models, string> = {
+  user: "Users",
+  category: "Categories",
+};
 
 async function handleGoToPreviousPage() {
   if (isFirstPage.value) return;
@@ -27,7 +34,8 @@ async function handleGoToNextPage() {
 <template>
   <footer class="flex justify-between">
     <div class="flex items-center text-sm text-neutral-950/75">
-      Showing {{ props.from }} to {{ props.to }} of {{ props.total }} Users
+      Showing {{ props.from }} to {{ props.to }} of {{ props.total }}
+      {{ model[props.for] }}
     </div>
     <div class="flex gap-x-2">
       <Button
@@ -35,7 +43,7 @@ async function handleGoToNextPage() {
         :disabled="isFirstPage"
         @click="handleGoToPreviousPage"
       >
-        <span class="sr-only">Previous Listing of Users</span>
+        <span class="sr-only">Previous Listing of {{ model[props.for] }}</span>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
           <path
             fill="currentColor"
@@ -44,7 +52,7 @@ async function handleGoToNextPage() {
         </svg>
       </Button>
       <Button variant="icon" :disabled="isLastPage" @click="handleGoToNextPage">
-        <span class="sr-only">Next Listing of Users</span>
+        <span class="sr-only">Next Listing of {{ model[props.for] }}</span>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
           <path
             fill="currentColor"

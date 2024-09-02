@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { definePageMeta, useLazyAsyncData, useSanctumClient } from "#imports";
+import {
+  computed,
+  definePageMeta,
+  useLazyAsyncData,
+  useRoute,
+  useSanctumClient,
+} from "#imports";
 import Button from "~/components/Button.vue";
 import Main from "~/components/Main.vue";
+import Pagination from "~/components/Pagination.vue";
 import Table from "~/components/Table.vue";
-import type { Resource } from "~/lib/types";
+import type { Paginate } from "~/lib/types";
 import type { Category } from "~/lib/types/Category";
 
 definePageMeta({
@@ -12,15 +19,18 @@ definePageMeta({
 });
 
 // GET CATEGORIES
+const route = useRoute();
+const page = computed(() => route.query.page ?? 1);
+
 const client = useSanctumClient();
 
 const {
   status,
   error,
   data: response,
-  refresh,
-} = await useLazyAsyncData<Resource<Category[]>>(async () =>
-  client("/api/categories"),
+} = await useLazyAsyncData<Paginate<Category[]>>(
+  async () => client("/api/categories", { params: { page: page.value } }),
+  { watch: [page] },
 );
 </script>
 
@@ -58,7 +68,7 @@ const {
         <tr v-if="status === 'pending'">
           <td colspan="6" class="text-center">loading...</td>
         </tr>
-        <tr v-if="status === 'error'">
+        <tr v-else-if="status === 'error'">
           <td colspan="6" class="text-center">{{ error }}</td>
         </tr>
         <tr v-for="category in response?.data" v-else :key="category.id">
@@ -92,5 +102,14 @@ const {
         </tr>
       </template>
     </Table>
+    <Pagination
+      v-if="response"
+      for="category"
+      :from="response.meta.from"
+      :to="response.meta.to"
+      :total="response.meta.total"
+      :current-page="response.meta.current_page"
+      :last-page="response.meta.last_page"
+    />
   </Main>
 </template>
