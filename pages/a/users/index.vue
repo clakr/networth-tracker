@@ -37,9 +37,9 @@ const {
 );
 
 // DELETE USER
-const user = useSanctumUser<User>();
+const authedUser = useSanctumUser<User>();
 function isAuthedUser(id: User["id"]) {
-  return user.value?.id === id;
+  return authedUser.value?.id === id;
 }
 
 async function handleDeleteUser(id: User["id"]) {

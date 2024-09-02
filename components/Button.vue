@@ -37,7 +37,7 @@ const variantDefaultClasses: Record<Variant, string> = {
 
 const classes = computed(() =>
   twMerge(
-    "outline-offset-4 outline-neutral-950 disabled:cursor-not-allowed font-medium text-sm rounded-md",
+    "outline-offset-4 outline-neutral-950 disabled:cursor-not-allowed font-medium text-sm rounded-md whitespace-nowrap",
     variantDefaultClasses[props.variant],
     props.className,
   ),
