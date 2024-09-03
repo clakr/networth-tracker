@@ -28,10 +28,17 @@ const {
   status,
   error,
   data: response,
+  refresh,
 } = await useLazyAsyncData<Paginate<Category[]>>(
   async () => client("/api/categories", { params: { page: page.value } }),
   { watch: [page] },
 );
+
+// DELETE CATEGORY
+async function handleDeleteCategory(id: Category["id"]) {
+  await client(`/api/categories/${id}`, { method: "delete" });
+  await refresh();
+}
 </script>
 
 <template>
@@ -88,7 +95,7 @@ const {
                   />
                 </svg>
               </Button>
-              <Button variant="icon">
+              <Button variant="icon" @click="handleDeleteCategory(category.id)">
                 <span class="sr-only">Delete Category</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path
