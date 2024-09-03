@@ -12,3 +12,4 @@ export enum Type {
 }
 
 export type AdminCreateCategoryForm = Pick<Category, "name" | "type">;
+export type AdminUpdateCategoryForm = AdminCreateCategoryForm;

@@ -12,6 +12,7 @@ import Pagination from "~/components/Pagination.vue";
 import Table from "~/components/Table.vue";
 import type { Paginate } from "~/lib/types";
 import type { Category } from "~/lib/types/Category";
+import capitalizeFirstLetter from "~/lib/utils/capitalizeFirstLetter";
 
 definePageMeta({
   middleware: "admin",
@@ -81,7 +82,7 @@ async function handleDeleteCategory(id: Category["id"]) {
         <tr v-for="category in response?.data" v-else :key="category.id">
           <td>{{ category.id }}</td>
           <td>{{ category.name }}</td>
-          <td>{{ category.type }}</td>
+          <td>{{ capitalizeFirstLetter(category.type) }}</td>
           <td>{{ category.createdAt }}</td>
           <td>{{ category.updatedAt }}</td>
           <td>
