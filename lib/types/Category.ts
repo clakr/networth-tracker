@@ -10,3 +10,5 @@ export enum Type {
   INCOME = "income",
   EXPENSE = "expense",
 }
+
+export type AdminCreateCategoryForm = Pick<Category, "name" | "type">;

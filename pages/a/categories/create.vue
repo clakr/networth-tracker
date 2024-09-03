@@ -6,7 +6,6 @@ import {
   ref,
   useSanctumClient,
 } from "#imports";
-import Button from "~/components/Button.vue";
 import Errors from "~/components/Form/Errors.vue";
 import Field from "~/components/Form/Field.vue";
 import Input from "~/components/Form/Input.vue";
@@ -14,8 +13,8 @@ import Label from "~/components/Form/Label.vue";
 import Select from "~/components/Form/Select.vue";
 import Main from "~/components/Main.vue";
 import type { Nullable } from "~/lib/types";
+import { Type, type AdminCreateCategoryForm } from "~/lib/types/Category";
 import type { LaravelFormErrors } from "~/lib/types/Error";
-import { Role, type AdminCreateUserForm } from "~/lib/types/User";
 import capitalizeFirstLetter from "~/lib/utils/capitalizeFirstLetter";
 
 definePageMeta({
@@ -23,18 +22,18 @@ definePageMeta({
   layout: "admin",
 });
 
-// CREATE USER
-const form = reactive<AdminCreateUserForm>({
+// CREATE CATEGORY
+const form = reactive<AdminCreateCategoryForm>({
   name: "",
-  email: "",
-  role: Role.USER,
+  type: Type.INCOME,
 });
 
 const isPending = ref(false);
-const formErrors = ref<Nullable<LaravelFormErrors<AdminCreateUserForm>>>(null);
+const formErrors =
+  ref<Nullable<LaravelFormErrors<AdminCreateCategoryForm>>>(null);
 const httpError = ref<Nullable<Error>>(null);
 
-async function handleCreateUser() {
+async function handleCreateCategory() {
   try {
     isPending.value = true;
     formErrors.value = null;
@@ -42,7 +41,7 @@ async function handleCreateUser() {
 
     const client = useSanctumClient();
 
-    await client("/api/users", {
+    await client("/api/categories", {
       method: "POST",
       body: form,
       onResponseError({ response }) {
@@ -50,7 +49,7 @@ async function handleCreateUser() {
       },
     });
 
-    await navigateTo("/a/users");
+    await navigateTo("/a/categories");
   } catch (error) {
     if (error instanceof Error) httpError.value = error;
   } finally {
@@ -60,47 +59,26 @@ async function handleCreateUser() {
 </script>
 
 <template>
-  <Main header="Create User">
-    <form class="flex flex-col gap-y-4" @submit.prevent="handleCreateUser">
+  <Main header="Create Category">
+    <form class="flex flex-col gap-y-4" @submit.prevent="handleCreateCategory">
       <Field>
         <Label for="name">Name</Label>
-        <Input
-          id="name"
-          v-model="form.name"
-          type="text"
-          name="name"
-          autocomplete="name"
-          placeholder="John Doe"
-          required
-        />
+        <Input id="name" v-model="form.name" type="text" name="name" required />
         <Errors :error="formErrors?.name" class-name="mt-1" />
       </Field>
       <Field>
-        <Label for="email">Email</Label>
-        <Input
-          id="email"
-          v-model="form.email"
-          type="email"
-          name="email"
-          autocomplete="email"
-          placeholder="johndoe@example.com"
-          required
-        />
-        <Errors :error="formErrors?.email" class-name="mt-1" />
-      </Field>
-      <Field>
-        <Label for="role">Role</Label>
-        <Select id="role" v-model="form.role" name="role">
-          <option v-for="role in Role" :key="role" :value="role">
-            {{ capitalizeFirstLetter(role) }}
+        <Label for="type">Type</Label>
+        <Select id="type" v-model="form.type" name="type">
+          <option v-for="type in Type" :key="type" :value="type">
+            {{ capitalizeFirstLetter(type) }}
           </option>
         </Select>
-        <Errors :error="formErrors?.role" class-name="mt-1" />
+        <Errors :error="formErrors?.type" class-name="mt-1" />
       </Field>
       <span v-if="!formErrors && httpError">
         {{ httpError }}
       </span>
-      <Button :disabled="isPending">Create User</Button>
+      <Button :disabled="isPending">Create Category</Button>
     </form>
   </Main>
 </template>

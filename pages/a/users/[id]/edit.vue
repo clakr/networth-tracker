@@ -113,6 +113,9 @@ async function handleUpdateUser() {
         </Select>
         <Errors :error="formErrors?.role" class-name="mt-1" />
       </Field>
+      <span v-if="!formErrors && httpError">
+        {{ httpError }}
+      </span>
       <Button :disabled="isPending">Update User</Button>
     </form>
   </Main>
