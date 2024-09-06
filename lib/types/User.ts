@@ -1,11 +1,10 @@
-export type User = {
-  id: number;
+import type { Model } from ".";
+
+export type User = Model & {
   name: string;
   email: string;
   role: Role;
   emailVerifiedAt: Date;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
 export enum Role {

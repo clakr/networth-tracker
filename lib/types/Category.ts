@@ -1,9 +1,8 @@
-export type Category = {
-  id: number;
+import type { Model } from ".";
+
+export type Category = Model & {
   name: string;
   type: Type;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
 export enum Type {

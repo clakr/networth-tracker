@@ -6,20 +6,19 @@ import {
   useRoute,
   useSanctumClient,
 } from "#imports";
-import Button from "~/components/Button.vue";
 import Main from "~/components/Main.vue";
 import Pagination from "~/components/Pagination.vue";
 import Table from "~/components/Table.vue";
 import type { Paginate } from "~/lib/types";
 import type { Category } from "~/lib/types/Category";
-import capitalizeFirstLetter from "~/lib/utils/capitalizeFirstLetter";
+import type { SubCategory } from "~/lib/types/SubCategory";
 
 definePageMeta({
   middleware: "admin",
   layout: "admin",
 });
 
-// GET CATEGORIES
+// GET SUBCATEGORIES
 const route = useRoute();
 const page = computed(() => route.query.page ?? 1);
 
@@ -30,22 +29,25 @@ const {
   error,
   data: response,
   refresh,
-} = await useLazyAsyncData<Paginate<Category[]>>(
-  async () => client("/api/categories", { params: { page: page.value } }),
+} = await useLazyAsyncData<Paginate<(SubCategory & { category: Category })[]>>(
+  async () => client("/api/subcategories", { params: { page: page.value } }),
   { watch: [page] },
 );
 
-// DELETE CATEGORY
-async function handleDeleteCategory(id: Category["id"]) {
-  await client(`/api/categories/${id}`, { method: "delete" });
+// DELETE SUBCATEGORY
+async function handleDeleteSubCategory(id: SubCategory["id"]) {
+  await client(`/api/subcategories/${id}`, { method: "delete" });
   await refresh();
 }
 </script>
 
 <template>
-  <Main header="Categories">
+  <Main header="Subcategories">
     <header class="flex justify-end">
-      <Button class-name="flex gap-x-2 items-center" to="/a/categories/create">
+      <Button
+        class-name="flex gap-x-2 items-center"
+        to="/a/subcategories/create"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -53,14 +55,14 @@ async function handleDeleteCategory(id: Category["id"]) {
         >
           <path fill="currentColor" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z" />
         </svg>
-        Add Category
+        Add Subcategory
       </Button>
     </header>
     <Table>
       <template #thead>
         <th>ID</th>
         <th>Name</th>
-        <th>Type</th>
+        <th>Category</th>
         <th>Created</th>
         <th>Updated</th>
         <th></th>
@@ -72,16 +74,19 @@ async function handleDeleteCategory(id: Category["id"]) {
         <tr v-else-if="status === 'error'">
           <td colspan="6" class="text-center">{{ error }}</td>
         </tr>
-        <tr v-for="category in response?.data" v-else :key="category.id">
-          <td>{{ category.id }}</td>
-          <td>{{ category.name }}</td>
-          <td>{{ capitalizeFirstLetter(category.type) }}</td>
-          <td>{{ category.createdAt }}</td>
-          <td>{{ category.updatedAt }}</td>
+        <tr v-for="subCategory in response?.data" v-else :key="subCategory.id">
+          <td>{{ subCategory.id }}</td>
+          <td>{{ subCategory.name }}</td>
+          <td>{{ subCategory.category.name }}</td>
+          <td>{{ subCategory.createdAt }}</td>
+          <td>{{ subCategory.updatedAt }}</td>
           <td>
             <div class="flex gap-x-2">
-              <Button variant="icon" :to="`/a/categories/${category.id}/edit`">
-                <span class="sr-only">Edit Category</span>
+              <Button
+                variant="icon"
+                :to="`/a/subcategories/${subCategory.id}/edit`"
+              >
+                <span class="sr-only">Edit Subcategory</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"
@@ -89,8 +94,11 @@ async function handleDeleteCategory(id: Category["id"]) {
                   />
                 </svg>
               </Button>
-              <Button variant="icon" @click="handleDeleteCategory(category.id)">
-                <span class="sr-only">Delete Category</span>
+              <Button
+                variant="icon"
+                @click="handleDeleteSubCategory(subCategory.id)"
+              >
+                <span class="sr-only">Delete Subcategory</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"

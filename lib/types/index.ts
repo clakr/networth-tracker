@@ -24,3 +24,9 @@ export type Paginate<T> = Resource<T> & {
 export type Nullable<T> = T | null;
 
 export type Models = "user" | "category";
+
+export type Model = {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
