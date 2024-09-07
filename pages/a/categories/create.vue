@@ -68,7 +68,7 @@ async function handleCreateCategory() {
       </Field>
       <Field>
         <Label for="type">Type</Label>
-        <Select id="type" v-model="form.type" name="type">
+        <Select id="type" v-model="form.type" name="type" required>
           <option v-for="type in Type" :key="type" :value="type">
             {{ capitalizeFirstLetter(type) }}
           </option>

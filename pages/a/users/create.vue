@@ -90,7 +90,7 @@ async function handleCreateUser() {
       </Field>
       <Field>
         <Label for="role">Role</Label>
-        <Select id="role" v-model="form.role" name="role">
+        <Select id="role" v-model="form.role" name="role" required>
           <option v-for="role in Role" :key="role" :value="role">
             {{ capitalizeFirstLetter(role) }}
           </option>

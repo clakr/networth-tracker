@@ -97,7 +97,7 @@ async function handleUpdateCategory() {
       </Field>
       <Field>
         <Label for="type">Type</Label>
-        <Select id="type" v-model="response.data.type" name="type">
+        <Select id="type" v-model="response.data.type" name="type" required>
           <option v-for="type in Type" :key="type" :value="type">
             {{ capitalizeFirstLetter(type) }}
           </option>

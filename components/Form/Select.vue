@@ -2,7 +2,7 @@
 import { twMerge } from "tailwind-merge";
 import { computed } from "vue";
 
-const model = defineModel<string>();
+const model = defineModel<string | number>();
 
 const props = defineProps<{
   className?: string;
