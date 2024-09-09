@@ -8,3 +8,4 @@ export type SubCategory = Model & {
 export type AdminCreateSubCategoryForm = Pick<SubCategory, "name"> & {
   categoryId: Category["id"];
 };
+export type AdminUpdateSubCategoryForm = AdminCreateSubCategoryForm;

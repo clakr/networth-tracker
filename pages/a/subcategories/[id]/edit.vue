@@ -7,29 +7,27 @@ import {
   useRoute,
   useSanctumClient,
 } from "#imports";
-import Button from "~/components/Button.vue";
+import Errors from "~/components/Form/Errors.vue";
 import Field from "~/components/Form/Field.vue";
 import Input from "~/components/Form/Input.vue";
 import Label from "~/components/Form/Label.vue";
 import Select from "~/components/Form/Select.vue";
-import Main from "~/components/Main.vue";
 import type { Nullable, Resource } from "~/lib/types";
-import {
-  Type,
-  type AdminUpdateCategoryForm,
-  type Category,
-} from "~/lib/types/Category";
+import type { Category } from "~/lib/types/Category";
 import type { LaravelFormErrors } from "~/lib/types/Error";
-import capitalizeFirstLetter from "~/lib/utils/capitalizeFirstLetter";
+import type {
+  AdminUpdateSubCategoryForm,
+  SubCategory,
+} from "~/lib/types/SubCategory";
 
 definePageMeta({
   middleware: "admin",
   layout: "admin",
 });
 
-// GET CATEGORY
+// GET CATEGORIES AND SUBCATEGORY
 const route = useRoute();
-const categoryId = route.params.id;
+const subCategoryId = route.params.id;
 
 const client = useSanctumClient();
 
@@ -37,34 +35,39 @@ const {
   status,
   error,
   data: response,
-} = await useLazyAsyncData<Resource<Category>>(`categories:${categoryId}`, () =>
-  client(`/api/categories/${categoryId}`),
+} = await useLazyAsyncData<
+  [Resource<Category[]>, Resource<SubCategory & { category: Category }>]
+>(() =>
+  Promise.all([
+    client("/api/categories/all"),
+    client(`/api/subcategories/${subCategoryId}`),
+  ]),
 );
 
-// EDIT CATEGORY
+// EDIT SUBCATEGORY
 const isPending = ref(false);
 const formErrors =
-  ref<Nullable<LaravelFormErrors<AdminUpdateCategoryForm>>>(null);
+  ref<Nullable<LaravelFormErrors<AdminUpdateSubCategoryForm>>>(null);
 const httpError = ref<Nullable<Error>>(null);
 
-async function handleUpdateCategory() {
+async function handleUpdateSubCategory() {
   try {
     isPending.value = true;
     formErrors.value = null;
     httpError.value = null;
 
-    await client(`/api/categories/${categoryId}`, {
+    await client(`/api/subcategories/${subCategoryId}`, {
       method: "PATCH",
       body: {
-        name: response.value?.data.name,
-        type: response.value?.data.type,
+        name: response.value?.[1].data.name,
+        category_id: response.value?.[1].data.category.id,
       },
       onResponseError({ response }) {
         formErrors.value = response._data.errors;
       },
     });
 
-    await navigateTo("/a/categories");
+    await navigateTo("/a/subcategories");
   } catch (error) {
     if (error instanceof Error) httpError.value = error;
   } finally {
@@ -74,19 +77,19 @@ async function handleUpdateCategory() {
 </script>
 
 <template>
-  <Main :header="`Edit Category #${categoryId}`">
+  <Main :header="`Edit Subcategory #${subCategoryId}`">
     <span v-if="status === 'pending'">loading...</span>
     <span v-else-if="status === 'error'">{{ error }}</span>
     <form
       v-else-if="status === 'success' && response"
       class="flex flex-col gap-y-4"
-      @submit.prevent="handleUpdateCategory"
+      @submit.prevent="handleUpdateSubCategory"
     >
       <Field>
         <Label for="name">Name</Label>
         <Input
           id="name"
-          v-model="response.data.name"
+          v-model="response[1].data.name"
           type="text"
           name="name"
           required
@@ -94,18 +97,27 @@ async function handleUpdateCategory() {
         <Errors :error="formErrors?.name" class-name="mt-1" />
       </Field>
       <Field>
-        <Label for="type">Type</Label>
-        <Select id="type" v-model="response.data.type" name="type" required>
-          <option v-for="type in Type" :key="type" :value="type">
-            {{ capitalizeFirstLetter(type) }}
+        <Label for="category">Category</Label>
+        <Select
+          id="category"
+          v-model="response[1].data.category.id"
+          name="category"
+          required
+        >
+          <option
+            v-for="category in response[0].data"
+            :key="category.id"
+            :value="category.id"
+          >
+            {{ category.name }}
           </option>
         </Select>
-        <Errors :error="formErrors?.type" class-name="mt-1" />
+        <Errors :error="formErrors?.categoryId" class-name="mt-1" />
       </Field>
       <span v-if="!formErrors && httpError">
         {{ httpError }}
       </span>
-      <Button :disabled="isPending">Update Category</Button>
+      <Button :disabled="isPending">Update Subcategory</Button>
     </form>
   </Main>
 </template>
