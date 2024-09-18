@@ -30,7 +30,7 @@ async function handleLogoutUser() {
     <Navbar class-name="flex justify-end col-span-2">
       <Button :disabled="isPending" @click="handleLogoutUser">Logout</Button>
     </Navbar>
-    <Aside class-name="flex flex-col ">
+    <Aside class-name="flex flex-col">
       <Link to="/a">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path
